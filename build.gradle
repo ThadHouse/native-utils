@@ -8,6 +8,17 @@ plugins {
     id 'idea'
 }
 
+repositories {
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    mavenLocal()
+}
+
+dependencies {
+    compile 'edu.wpi.first:ToolchainPlugin:2019.4.1'
+}
+
 // Ensure that the WPILibVersioningPlugin is setup by setting the release type, if releaseType wasn't
 // already specified on the command line
 if (!hasProperty('releaseType')) {
@@ -28,7 +39,7 @@ if (pubVersion == '') {
 }
 
 if (project.hasProperty('localPublish')) {
-    pubVersion = '424242.0.0-local'
+    pubVersion = '424242.1.0-local'
 }
 
 group = 'edu.wpi.first'
