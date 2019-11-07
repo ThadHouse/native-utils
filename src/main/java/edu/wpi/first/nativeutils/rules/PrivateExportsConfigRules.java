@@ -1,10 +1,12 @@
 package edu.wpi.first.nativeutils.rules;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
 
 import org.gradle.api.NamedDomainObjectCollection;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.internal.ProjectLayout;
@@ -52,8 +54,14 @@ public class PrivateExportsConfigRules extends RuleSource {
         SharedLibraryBinarySpec binary = (SharedLibraryBinarySpec) oBinary;
         String exportsTaskName = "generateExports" + binary.getBuildTask().getName();
         TaskProvider<PrivateExportsGenerationTask> exportsTask = project.getTasks().register(exportsTaskName, PrivateExportsGenerationTask.class, task -> {
-          task.getSymbolsToExportFile().set(config.getExportsFile());
+          task.getSymbolsToExportFiles().add(config.getExportsFile());
           task.getLibraryName().set(nativeComponent.getBaseName());
+
+          for (Entry<String, RegularFileProperty> plat : config.getPlatformExportsFiles().get().entrySet()) {
+            if (plat.getKey().equals(binary.getTargetPlatform().getName())) {
+              task.getSymbolsToExportFiles().add(plat.getValue());
+            }
+          }
 
 
 
