@@ -82,14 +82,16 @@ public class WPINativeUtilsExtension {
         public String raspbian = "linuxraspbian";
         public String windowsx64 = "windowsx86-64";
         public String windowsx86 = "windowsx86";
+        public String windowsaarch64 = "windowsaarch64";
         public String osxx64 = "osxx86-64";
+        public String osxaarch64 = "osxaarch64";
         public String linuxx64 = "linuxx86-64";
         public String aarch64bionic = "linuxaarch64bionic";
         public String aarch64xenial = "linuxaarch64xenial";
         public List<String> allPlatforms = Collections.unmodifiableList(Arrays.asList(roborio, raspbian, aarch64bionic,
-                aarch64xenial, windowsx64, windowsx86, osxx64, linuxx64));
+                aarch64xenial, windowsx64, windowsx86, windowsaarch64, osxx64, osxaarch64, linuxx64));
         public List<String> desktopPlatforms = Collections
-                .unmodifiableList(Arrays.asList(windowsx64, windowsx86, osxx64, linuxx64));
+                .unmodifiableList(Arrays.asList(windowsx64, windowsx86, windowsaarch64, osxx64, osxaarch64, linuxx64));
     }
 
     public Platforms platforms = new Platforms();
@@ -165,16 +167,20 @@ public class WPINativeUtilsExtension {
 
         PlatformConfig windowsx86_64 = nativeExt.getPlatformConfigs().create(platforms.windowsx64);
         PlatformConfig windowsx86 = nativeExt.getPlatformConfigs().create(platforms.windowsx86);
+        PlatformConfig windowsaarch64 = nativeExt.getPlatformConfigs().create(platforms.windowsaarch64);
         windowsPlatforms.put(platforms.windowsx64, windowsx86_64);
         windowsPlatforms.put(platforms.windowsx86, windowsx86);
+        windowsPlatforms.put(platforms.windowsaarch64, windowsaarch64);
         PlatformConfig linuxx86_64 = nativeExt.getPlatformConfigs().create(platforms.linuxx64);
         PlatformConfig osxx86_64 = nativeExt.getPlatformConfigs().create(platforms.osxx64);
+        PlatformConfig osxaarch64 = nativeExt.getPlatformConfigs().create(platforms.osxaarch64);
         PlatformConfig linuxathena = nativeExt.getPlatformConfigs().create(platforms.roborio);
         PlatformConfig linuxraspbian = nativeExt.getPlatformConfigs().create(platforms.raspbian);
         PlatformConfig linuxbionic = nativeExt.getPlatformConfigs().create(platforms.aarch64bionic);
         PlatformConfig linuxxenial = nativeExt.getPlatformConfigs().create(platforms.aarch64xenial);
         unixPlatforms.put(platforms.linuxx64, linuxx86_64);
         unixPlatforms.put(platforms.osxx64, osxx86_64);
+        unixPlatforms.put(platforms.osxaarch64, osxaarch64);
         unixPlatforms.put(platforms.raspbian, linuxraspbian);
         unixPlatforms.put(platforms.roborio, linuxathena);
         unixPlatforms.put(platforms.aarch64bionic, linuxbionic);
@@ -198,11 +204,17 @@ public class WPINativeUtilsExtension {
         windowsx86.setPlatformPath("windows/x86");
         addWindowsArgs(windowsx86);
 
+        windowsaarch64.setPlatformPath("windows/aarch64");
+        addWindowsArgs(windowsaarch64);
+
         linuxx86_64.setPlatformPath("linux/x86-64");
         addLinuxArgs(linuxx86_64);
 
         osxx86_64.setPlatformPath("osx/x86-64");
         addMacArgs(osxx86_64);
+
+        osxaarch64.setPlatformPath("osx/aarch64");
+        addMacArgs(osxaarch64);
     }
 
     public class DependencyVersions {

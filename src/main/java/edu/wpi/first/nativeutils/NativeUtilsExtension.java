@@ -15,7 +15,6 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.internal.os.OperatingSystem;
 import org.gradle.nativeplatform.NativeBinarySpec;
-import org.gradle.nativeplatform.NativeLibraryBinarySpec;
 import org.gradle.nativeplatform.StaticLibraryBinarySpec;
 import org.gradle.platform.base.Platform;
 import org.gradle.platform.base.PlatformAwareComponentSpec;
@@ -261,8 +260,11 @@ public class NativeUtilsExtension {
       platformsToConfigure.addAll(tmpList);
     }
 
-    if (!project.hasProperty("buildwin32") && NativePlatforms.desktopArch().equals("x86-64")) {
-      platformsToConfigure.remove("windowsx86");
+    if (!project.hasProperty("buildalldesktop")) {
+      NativePlatforms.PlatformArchPair[] extraPlatforms = NativePlatforms.desktopExtraPlatforms();
+      for (NativePlatforms.PlatformArchPair platform : extraPlatforms) {
+        platformsToConfigure.remove(platform.platformName);
+      }
     }
   }
 
