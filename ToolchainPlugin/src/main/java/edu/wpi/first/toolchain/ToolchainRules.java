@@ -70,7 +70,8 @@ public class ToolchainRules extends RuleSource {
                     Action<List<String>> m64args = new Action<List<String>>() {
                         @Override
                         public void execute(List<String> args) {
-                            args.add("-arch arm64");
+                            args.add("-arch");
+                            args.add("arm64");
                         }
                     };
                     gccToolChain.getCppCompiler().withArguments(m64args);
