@@ -81,14 +81,13 @@ public class ToolchainRules extends RuleSource {
                     gccToolChain.getObjcppCompiler().withArguments(m64args);
                     gccToolChain.getLinker().withArguments(m64args);
                     gccToolChain.getAssembler().withArguments(m64args);
-                    System.out.println(gccToolChain);
                 });
                 gcc.target("osxx86-64", gccToolChain -> {
                     Action<List<String>> m64args = new Action<List<String>>() {
                         @Override
                         public void execute(List<String> args) {
                             args.add("-arch");
-                            args.add("x86-64");
+                            args.add("x86_64");
                         }
                     };
                     gccToolChain.getCppCompiler().withArguments(m64args);
@@ -97,7 +96,6 @@ public class ToolchainRules extends RuleSource {
                     gccToolChain.getObjcppCompiler().withArguments(m64args);
                     gccToolChain.getLinker().withArguments(m64args);
                     gccToolChain.getAssembler().withArguments(m64args);
-                    System.out.println(gccToolChain);
                 });
             }
         });
