@@ -66,12 +66,29 @@ public class ToolchainRules extends RuleSource {
         toolChainRegistry.whenObjectAdded(n -> {
             if (n instanceof ClangToolChain) {
                 AbstractGccCompatibleToolChain gcc = (AbstractGccCompatibleToolChain)n;
+                gcc.setTargets();
                 gcc.target("osxaarch64", gccToolChain -> {
                     Action<List<String>> m64args = new Action<List<String>>() {
                         @Override
                         public void execute(List<String> args) {
                             args.add("-arch");
                             args.add("arm64");
+                        }
+                    };
+                    gccToolChain.getCppCompiler().withArguments(m64args);
+                    gccToolChain.getcCompiler().withArguments(m64args);
+                    gccToolChain.getObjcCompiler().withArguments(m64args);
+                    gccToolChain.getObjcppCompiler().withArguments(m64args);
+                    gccToolChain.getLinker().withArguments(m64args);
+                    gccToolChain.getAssembler().withArguments(m64args);
+                    System.out.println(gccToolChain);
+                });
+                gcc.target("osxx86-64", gccToolChain -> {
+                    Action<List<String>> m64args = new Action<List<String>>() {
+                        @Override
+                        public void execute(List<String> args) {
+                            args.add("-arch");
+                            args.add("x86-64");
                         }
                     };
                     gccToolChain.getCppCompiler().withArguments(m64args);
