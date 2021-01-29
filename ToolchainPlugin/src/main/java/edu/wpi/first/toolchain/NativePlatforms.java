@@ -28,7 +28,7 @@ public class NativePlatforms {
         if (OperatingSystem.current().isWindows()) {
             String currentArch = desktopArch();
             if (currentArch.equals("x86-64")) {
-                return new PlatformArchPair[] {new PlatformArchPair("windowsaarch64", "arm"), new PlatformArchPair("windowsx86", "x86")};
+                return new PlatformArchPair[] {new PlatformArchPair("windowsaarch64", "arm64"), new PlatformArchPair("windowsx86", "x86")};
             } else if (currentArch.equals("x86")) {
                 return new PlatformArchPair[] {new PlatformArchPair("windowsaarch64", "arm64"), new PlatformArchPair("windowsx86-64", "x86-64")};
             } else {

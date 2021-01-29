@@ -3,6 +3,7 @@ package edu.wpi.first.toolchain;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.file.FileResolver;
@@ -31,18 +32,53 @@ import org.gradle.nativeplatform.toolchain.NativeToolChainRegistry;
 import org.gradle.nativeplatform.toolchain.internal.NativeToolChainRegistryInternal;
 import org.gradle.nativeplatform.toolchain.internal.gcc.metadata.SystemLibraryDiscovery;
 import org.gradle.nativeplatform.toolchain.internal.metadata.CompilerMetaDataProviderFactory;
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.UcrtLocator;
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.VisualStudioLocator;
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.WindowsSdkLocator;
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.version.CommandLineToolVersionLocator;
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.version.SystemPathVersionLocator;
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.version.VisualStudioMetaDataProvider;
+import org.gradle.nativeplatform.toolchain.internal.msvcpp.version.WindowsRegistryVersionLocator;
 import org.gradle.platform.base.BinaryContainer;
 import org.gradle.platform.base.BinarySpec;
 import org.gradle.platform.base.PlatformContainer;
 import org.gradle.process.internal.ExecActionFactory;
 
 import edu.wpi.first.toolchain.configurable.CrossCompilerConfiguration;
+import edu.wpi.first.toolchain.visualCpp.CustomVisualCpp;
+import edu.wpi.first.toolchain.visualCpp.CustomVisualCppToolChain;
+import edu.wpi.first.toolchain.visualCpp.CustomVisualStudioLocator;
 import jaci.gradle.log.ETLogger;
 import jaci.gradle.log.ETLoggerFactory;
 
 public class ToolchainRules extends RuleSource {
 
     private static final ETLogger logger = ETLoggerFactory.INSTANCE.create("ToolchainRules");
+
+    private void addVsToolchain(NativeToolChainRegistryInternal toolChainRegistry, ServiceRegistry serviceRegistry) {
+        final FileResolver fileResolver = serviceRegistry.get(FileResolver.class);
+        final ExecActionFactory execActionFactory = serviceRegistry.get(ExecActionFactory.class);
+        final Instantiator instantiator = serviceRegistry.get(Instantiator.class);
+        final OperatingSystem operatingSystem = serviceRegistry.get(OperatingSystem.class);
+        final BuildOperationExecutor buildOperationExecutor = serviceRegistry.get(BuildOperationExecutor.class);
+        final CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory = serviceRegistry.get(CompilerOutputFileNamingSchemeFactory.class);
+        final CommandLineToolVersionLocator cmdVersionLocator = serviceRegistry.get(CommandLineToolVersionLocator.class);
+        final WindowsRegistryVersionLocator  windowsRegistryLocator = serviceRegistry.get(WindowsRegistryVersionLocator.class);
+        final SystemPathVersionLocator systemPathLocator = serviceRegistry.get(SystemPathVersionLocator.class);
+        final VisualStudioMetaDataProvider versionDeterminer = serviceRegistry.get(VisualStudioMetaDataProvider.class);
+        final VisualStudioLocator visualStudioLocator = new CustomVisualStudioLocator(cmdVersionLocator, windowsRegistryLocator, systemPathLocator, versionDeterminer);
+        final UcrtLocator ucrtLocator = serviceRegistry.get(UcrtLocator.class);
+        final WindowsSdkLocator windowsSdkLocator = serviceRegistry.get(WindowsSdkLocator.class);
+        final WorkerLeaseService workerLeaseService = serviceRegistry.get(WorkerLeaseService.class);
+
+        toolChainRegistry.registerFactory(CustomVisualCpp.class, new NamedDomainObjectFactory<CustomVisualCpp>() {
+            @Override
+            public CustomVisualCpp create(String name) {
+                return instantiator.newInstance(CustomVisualCppToolChain.class, name, buildOperationExecutor, operatingSystem, fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, visualStudioLocator, windowsSdkLocator, ucrtLocator, instantiator, workerLeaseService);
+            }
+        });
+        toolChainRegistry.registerDefaultToolChain("CustomVisualCpp", CustomVisualCpp.class);
+    }
 
     @Defaults
     void addDefaultToolchains(NativeToolChainRegistryInternal toolChainRegistry, ServiceRegistry serviceRegistry,
@@ -69,6 +105,8 @@ public class ToolchainRules extends RuleSource {
 
             desc.getRegistrar().register(options, toolChainRegistry, instantiator);
         });
+
+        addVsToolchain(toolChainRegistry, serviceRegistry);
     }
 
     @Mutate
@@ -108,7 +146,6 @@ public class ToolchainRules extends RuleSource {
             for (NativePlatforms.PlatformArchPair platform : extraPlatforms) {
                 NativePlatform toCreate = platforms.maybeCreate(platform.platformName, NativePlatform.class);
                 toCreate.architecture(platform.arch);
-                System.out.println(platform.arch);
             }
 
             for (CrossCompilerConfiguration config : ext.getCrossCompilers()) {
