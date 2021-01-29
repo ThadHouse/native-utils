@@ -2,7 +2,9 @@ package edu.wpi.first.toolchain;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
+import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -14,6 +16,7 @@ import org.gradle.internal.reflect.Instantiator;
 import org.gradle.internal.service.ServiceRegistry;
 import org.gradle.internal.work.WorkerLeaseService;
 import org.gradle.model.Defaults;
+import org.gradle.model.Finalize;
 import org.gradle.model.ModelMap;
 import org.gradle.model.Mutate;
 import org.gradle.model.RuleSource;
@@ -30,6 +33,8 @@ import org.gradle.nativeplatform.test.tasks.RunTestExecutable;
 import org.gradle.nativeplatform.toolchain.NativeToolChain;
 import org.gradle.nativeplatform.toolchain.NativeToolChainRegistry;
 import org.gradle.nativeplatform.toolchain.internal.NativeToolChainRegistryInternal;
+import org.gradle.nativeplatform.toolchain.internal.clang.ClangToolChain;
+import org.gradle.nativeplatform.toolchain.internal.gcc.AbstractGccCompatibleToolChain;
 import org.gradle.nativeplatform.toolchain.internal.gcc.metadata.SystemLibraryDiscovery;
 import org.gradle.nativeplatform.toolchain.internal.metadata.CompilerMetaDataProviderFactory;
 import org.gradle.nativeplatform.toolchain.internal.msvcpp.UcrtLocator;
@@ -54,6 +59,31 @@ import jaci.gradle.log.ETLoggerFactory;
 public class ToolchainRules extends RuleSource {
 
     private static final ETLogger logger = ETLoggerFactory.INSTANCE.create("ToolchainRules");
+
+    @Finalize
+    void addClangArm(NativeToolChainRegistryInternal toolChainRegistry) {
+        System.out.println("Finaize rule");
+        toolChainRegistry.whenObjectAdded(n -> {
+            if (n instanceof ClangToolChain) {
+                AbstractGccCompatibleToolChain gcc = (AbstractGccCompatibleToolChain)n;
+                gcc.target("osxaarch64", gccToolChain -> {
+                    Action<List<String>> m64args = new Action<List<String>>() {
+                        @Override
+                        public void execute(List<String> args) {
+                            args.add("-arch arm64");
+                        }
+                    };
+                    gccToolChain.getCppCompiler().withArguments(m64args);
+                    gccToolChain.getcCompiler().withArguments(m64args);
+                    gccToolChain.getObjcCompiler().withArguments(m64args);
+                    gccToolChain.getObjcppCompiler().withArguments(m64args);
+                    gccToolChain.getLinker().withArguments(m64args);
+                    gccToolChain.getAssembler().withArguments(m64args);
+                    System.out.println(gccToolChain);
+                });
+            }
+        });
+    }
 
     private void addVsToolchain(NativeToolChainRegistryInternal toolChainRegistry, ServiceRegistry serviceRegistry) {
         final FileResolver fileResolver = serviceRegistry.get(FileResolver.class);
