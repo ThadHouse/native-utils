@@ -41,6 +41,7 @@ import edu.wpi.first.nativeutils.exports.PrivateExportsConfig;
 import edu.wpi.first.nativeutils.platforms.DefaultPlatformConfig;
 import edu.wpi.first.nativeutils.platforms.PlatformConfig;
 import edu.wpi.first.nativeutils.resources.ResourceGenerationTask;
+import edu.wpi.first.nativeutils.rust.RustPlugin;
 import edu.wpi.first.nativeutils.sourcelink.SourceLinkPlugin;
 import edu.wpi.first.nativeutils.tasks.PrintNativeDependenciesTask;
 import edu.wpi.first.toolchain.NativePlatforms;
@@ -360,6 +361,10 @@ public class NativeUtilsExtension {
 
   public TaskProvider<ResourceGenerationTask> generateResources(String name, Action<ResourceGenerationTask> configure) {
     return project.getTasks().register(name, ResourceGenerationTask.class, configure);
+  }
+
+  public void withRust() {
+    project.getPluginManager().apply(RustPlugin.class);
   }
 
   public void withCrossRoboRIO() {

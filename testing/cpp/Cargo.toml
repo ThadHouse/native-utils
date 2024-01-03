@@ -1,0 +1,8 @@
+[package]
+name = "grapplefrcdriver"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "grapplefrcdriver"
+crate-type = ["lib", "staticlib"]
