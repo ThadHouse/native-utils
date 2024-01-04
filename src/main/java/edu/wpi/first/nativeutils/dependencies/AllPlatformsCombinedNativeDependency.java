@@ -35,7 +35,7 @@ public abstract class AllPlatformsCombinedNativeDependency implements NativeDepe
     }
 
     @Override
-    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType, Optional<FastDownloadDependencySet> loaderDependencySet) {
+    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType) {
         List<String> dependencies = getDependencies().get();
 
         ProjectLayout projectLayout = getProjectLayout();
@@ -46,7 +46,7 @@ public abstract class AllPlatformsCombinedNativeDependency implements NativeDepe
         FileCollection runtimeFiles = projectLayout.files();
 
         for (String dep : dependencies) {
-            ResolvedNativeDependency resolved = dependencyCollection.getByName(dep).resolveNativeDependency(platform, buildType, loaderDependencySet).get();
+            ResolvedNativeDependency resolved = dependencyCollection.getByName(dep).resolveNativeDependency(platform, buildType).get();
             includeRoots = includeRoots.plus(resolved.getIncludeRoots());
             sourceRoots = sourceRoots.plus(resolved.getSourceRoots());
             linkFiles = linkFiles.plus(resolved.getLinkFiles());

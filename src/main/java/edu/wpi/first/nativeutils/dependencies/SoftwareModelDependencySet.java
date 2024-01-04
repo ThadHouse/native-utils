@@ -15,7 +15,7 @@ import org.gradle.nativeplatform.NativeDependencySet;
 
 import edu.wpi.first.vscode.dependencies.SourceContainingNativeDependencySet;
 
-public class DelegatedDependencySet implements NativeDependencySet, Named, SourceContainingNativeDependencySet {
+public class SoftwareModelDependencySet implements NativeDependencySet, Named, SourceContainingNativeDependencySet {
     private FileCollection includeRoots;
     private FileCollection linkFiles;
     private FileCollection runtimeFiles;
@@ -25,7 +25,6 @@ public class DelegatedDependencySet implements NativeDependencySet, Named, Sourc
     private final NamedDomainObjectCollection<NativeDependency> dependencyCollection;
     private boolean resolved = false;
     private final NativeBinarySpec binary;
-    private final Optional<FastDownloadDependencySet> fastDownloadSet;
 
     @Inject
     public ProjectLayout getProjectLayout() {
@@ -33,12 +32,11 @@ public class DelegatedDependencySet implements NativeDependencySet, Named, Sourc
     }
 
     @Inject
-    public DelegatedDependencySet(String name, NamedDomainObjectCollection<NativeDependency> dependencyCollection, boolean required, NativeBinarySpec binary, FastDownloadDependencySet fastDownloadSet) {
+    public SoftwareModelDependencySet(String name, NamedDomainObjectCollection<NativeDependency> dependencyCollection, boolean required, NativeBinarySpec binary) {
         this.name = name;
         this.required = required;
         this.dependencyCollection = Objects.requireNonNull(dependencyCollection, "Must have a valid depenedency collection");
         this.binary = binary;
-        this.fastDownloadSet = Optional.of(fastDownloadSet);
         resolve();
     }
 
@@ -70,7 +68,7 @@ public class DelegatedDependencySet implements NativeDependencySet, Named, Sourc
             return;
         }
 
-        Optional<ResolvedNativeDependency> resolvedDep = resolvedDependency.resolveNativeDependency(binary.getTargetPlatform(), binary.getBuildType(), fastDownloadSet);
+        Optional<ResolvedNativeDependency> resolvedDep = resolvedDependency.resolveNativeDependency(binary.getTargetPlatform(), binary.getBuildType());
 
         if (resolvedDep.isEmpty()) {
             if (required) {

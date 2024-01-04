@@ -21,7 +21,7 @@ public abstract class WPIStaticMavenDependency extends WPIMavenDependency {
     }
 
     @Override
-    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType, Optional<FastDownloadDependencySet> loaderDependencySet) {
+    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType) {
         Optional<ResolvedNativeDependency> resolvedDep = tryFromCache(platform, buildType);
         if (resolvedDep.isPresent()) {
             return resolvedDep;
@@ -35,10 +35,10 @@ public abstract class WPIStaticMavenDependency extends WPIMavenDependency {
 
         String buildTypeName = buildType.getName();
 
-        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS, loaderDependencySet);
-        FileCollection sources = getArtifactRoots(getSourceClassifier().getOrElse(null), ArtifactType.SOURCES, loaderDependencySet);
+        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS);
+        FileCollection sources = getArtifactRoots(getSourceClassifier().getOrElse(null), ArtifactType.SOURCES);
 
-        FileCollection linkFiles = getArtifactFiles(platformName + "static", buildTypeName, STATIC_MATCHERS, EMPTY_LIST, ArtifactType.LINK, loaderDependencySet);
+        FileCollection linkFiles = getArtifactFiles(platformName + "static", buildTypeName, STATIC_MATCHERS, EMPTY_LIST, ArtifactType.LINK);
         FileCollection runtimeFiles = getProject().files();
 
         resolvedDep = Optional.of(new ResolvedNativeDependency(headers, sources, linkFiles, runtimeFiles));

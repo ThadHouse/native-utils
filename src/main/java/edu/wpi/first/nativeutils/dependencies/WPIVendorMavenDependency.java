@@ -22,8 +22,7 @@ public abstract class WPIVendorMavenDependency extends WPIMavenDependency {
     }
 
     @Override
-    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType,
-            Optional<FastDownloadDependencySet> loaderDependencySet) {
+    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType) {
         Optional<ResolvedNativeDependency> resolvedDep = tryFromCache(platform, buildType);
         if (resolvedDep.isPresent()) {
             return resolvedDep;
@@ -44,10 +43,8 @@ public abstract class WPIVendorMavenDependency extends WPIMavenDependency {
 
         getTargetPlatforms().addAll(artifact.binaryPlatforms);
 
-        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS,
-                loaderDependencySet);
-        FileCollection sources = getArtifactRoots(getSourceClassifier().getOrElse(null), ArtifactType.SOURCES,
-                loaderDependencySet);
+        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS);
+        FileCollection sources = getArtifactRoots(getSourceClassifier().getOrElse(null), ArtifactType.SOURCES);
 
         Set<String> targetPlatforms = getTargetPlatforms().get();
         String platformName = platform.getName();
@@ -71,13 +68,12 @@ public abstract class WPIVendorMavenDependency extends WPIMavenDependency {
 
         if (artifact.sharedLibrary) {
             linkFiles = getArtifactFiles(platformName, buildTypeName, WPISharedMavenDependency.SHARED_MATCHERS,
-                    WPISharedMavenDependency.SHARED_EXCLUDES, ArtifactType.LINK, loaderDependencySet);
+                    WPISharedMavenDependency.SHARED_EXCLUDES, ArtifactType.LINK);
             runtimeFiles = getArtifactFiles(platformName, buildTypeName, WPISharedMavenDependency.RUNTIME_MATCHERS,
-                    WPISharedMavenDependency.RUNTIME_EXCLUDES, ArtifactType.RUNTIME, loaderDependencySet);
+                    WPISharedMavenDependency.RUNTIME_EXCLUDES, ArtifactType.RUNTIME);
         } else {
             linkFiles = getArtifactFiles(platformName + "static", buildTypeName,
-                    WPIStaticMavenDependency.STATIC_MATCHERS, WPIStaticMavenDependency.EMPTY_LIST, ArtifactType.LINK,
-                    loaderDependencySet);
+                    WPIStaticMavenDependency.STATIC_MATCHERS, WPIStaticMavenDependency.EMPTY_LIST, ArtifactType.LINK);
             runtimeFiles = getProject().files();
         }
 

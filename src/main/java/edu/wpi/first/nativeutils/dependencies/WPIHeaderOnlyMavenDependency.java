@@ -17,13 +17,13 @@ public abstract class WPIHeaderOnlyMavenDependency extends WPIMavenDependency {
     }
 
     @Override
-    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType, Optional<FastDownloadDependencySet> loaderDependencySet) {
+    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType) {
         Optional<ResolvedNativeDependency> resolvedDep = tryFromCache(platform, buildType);
         if (resolvedDep.isPresent()) {
             return resolvedDep;
         }
 
-        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS, loaderDependencySet);
+        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS);
 
         FileCollection sources = getProject().files();
         FileCollection linkFiles = getProject().files();

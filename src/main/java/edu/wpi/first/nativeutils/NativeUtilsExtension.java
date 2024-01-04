@@ -1,9 +1,7 @@
 package edu.wpi.first.nativeutils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -29,8 +27,7 @@ import edu.wpi.first.nativeutils.dependencies.AllPlatformsCombinedNativeDependen
 import edu.wpi.first.nativeutils.dependencies.CombinedIgnoreMissingPlatformNativeDependency;
 import edu.wpi.first.nativeutils.dependencies.CombinedNativeDependency;
 import edu.wpi.first.nativeutils.dependencies.CustomDependencySet;
-import edu.wpi.first.nativeutils.dependencies.DelegatedDependencySet;
-import edu.wpi.first.nativeutils.dependencies.FastDownloadDependencySet;
+import edu.wpi.first.nativeutils.dependencies.SoftwareModelDependencySet;
 import edu.wpi.first.nativeutils.dependencies.NativeDependency;
 import edu.wpi.first.nativeutils.dependencies.WPIHeaderOnlyMavenDependency;
 import edu.wpi.first.nativeutils.dependencies.WPISharedMavenDependency;
@@ -207,22 +204,9 @@ public class NativeUtilsExtension {
     });
   }
 
-  private Map<NativeBinarySpec, FastDownloadDependencySet> depSetMap = new HashMap<>();
-  private FastDownloadDependencySet getFastDepSet(NativeBinarySpec binary) {
-    FastDownloadDependencySet fastDepSet = depSetMap.get(binary);
-    if (fastDepSet == null) {
-      fastDepSet = new FastDownloadDependencySet(binary.getComponent().getName() + binary.getName(), project);
-      depSetMap.put(binary, fastDepSet);
-      binary.lib(fastDepSet);
-    }
-    return fastDepSet;
-  }
-
   public void useRequiredLibrary(NativeBinarySpec binary, String... libraries) {
-    FastDownloadDependencySet fastDepSet = getFastDepSet(binary);
-
     for (String library : libraries) {
-      DelegatedDependencySet dds = objectFactory.newInstance(DelegatedDependencySet.class, library, dependencyContainer, true, binary, fastDepSet);
+      SoftwareModelDependencySet dds = objectFactory.newInstance(SoftwareModelDependencySet.class, library, dependencyContainer, true, binary);
       binary.lib(dds);
     }
   }
@@ -234,10 +218,8 @@ public class NativeUtilsExtension {
   }
 
   public void useOptionalLibrary(NativeBinarySpec binary, String... libraries) {
-    FastDownloadDependencySet fastDepSet = getFastDepSet(binary);
-
     for (String library : libraries) {
-      DelegatedDependencySet dds = objectFactory.newInstance(DelegatedDependencySet.class, library, dependencyContainer, false, binary, fastDepSet);
+      SoftwareModelDependencySet dds = objectFactory.newInstance(SoftwareModelDependencySet.class, library, dependencyContainer, false, binary);
       binary.lib(dds);
     }
   }

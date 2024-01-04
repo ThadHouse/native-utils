@@ -56,31 +56,21 @@ public abstract class WPIMavenDependency implements NativeDependency {
         this.project = project;
     }
 
-    private static class ViewConfigurationContainer {
-        final ArtifactView view;
-        final Configuration configuration;
+    private final Map<String, ArtifactView> classifierViewMap = new HashMap<>();
 
-        ViewConfigurationContainer(ArtifactView view, Configuration configuration) {
-            this.view = view;
-            this.configuration = configuration;
-        }
-    }
-
-    private final Map<String, ViewConfigurationContainer> classifierViewMap = new HashMap<>();
-
-    protected FileCollection getArtifactRoots(String classifier, ArtifactType type, Optional<FastDownloadDependencySet> loaderDependencySet) {
+    protected FileCollection getArtifactRoots(String classifier, ArtifactType type) {
         if (classifier == null) {
             return project.files();
         }
-        ArtifactView view = getViewForArtifact(classifier, type, loaderDependencySet);
+        ArtifactView view = getViewForArtifact(classifier, type);
         Callable<FileCollection> cbl = () -> view.getFiles();
         return project.files(cbl);
     }
 
     protected FileCollection getArtifactFiles(String targetPlatform, String buildType, List<String> matches,
-            List<String> excludes, ArtifactType type, Optional<FastDownloadDependencySet> loaderDependencySet) {
+            List<String> excludes, ArtifactType type) {
         buildType = buildType.equalsIgnoreCase("debug") ? "debug" : "";
-        ArtifactView view = getViewForArtifact(targetPlatform + buildType, type, loaderDependencySet);
+        ArtifactView view = getViewForArtifact(targetPlatform + buildType, type);
         PatternFilterable filterable = new PatternSet();
         filterable.include(matches);
         filterable.exclude(excludes);
@@ -88,20 +78,15 @@ public abstract class WPIMavenDependency implements NativeDependency {
         return project.files(cbl);
     }
 
-    protected ArtifactView getViewForArtifact(String classifier, ArtifactType type, Optional<FastDownloadDependencySet> loaderDependencySet) {
-        ViewConfigurationContainer viewContainer = classifierViewMap.get(classifier);
-        String configName = name + "_" + classifier;
+    protected ArtifactView getViewForArtifact(String classifier, ArtifactType type) {
+        ArtifactView viewContainer = classifierViewMap.get(classifier);
+
         if (viewContainer != null) {
-            if (loaderDependencySet.isPresent()) {
-                loaderDependencySet.get().addConfiguration(type, viewContainer.configuration);
-            }
-            return viewContainer.view;
+            return viewContainer;
         }
 
+        String configName = name + "_" + classifier;
         Configuration cfg = project.getConfigurations().create(configName);
-        if (loaderDependencySet.isPresent()) {
-            loaderDependencySet.get().addConfiguration(type, cfg);
-        }
         String dep = getGroupId().get() + ":" + getArtifactId().get() + ":" + getVersion().get() + ":" + classifier
                 + "@" + getExt().get();
         project.getDependencies().add(configName, dep);
@@ -114,7 +99,7 @@ public abstract class WPIMavenDependency implements NativeDependency {
             });
         });
 
-        classifierViewMap.put(classifier, new ViewConfigurationContainer(view, cfg));
+        classifierViewMap.put(classifier, view);
         return view;
     }
 

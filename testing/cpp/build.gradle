@@ -2,17 +2,37 @@ import edu.wpi.first.toolchain.NativePlatforms
 
 plugins {
     id "cpp"
-    id "edu.wpi.first.NativeUtils" version "2024.7.0"
+    id "edu.wpi.first.NativeUtils" version "2025.0.0"
+    id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
+}
+
+if (project.hasProperty('releaseMode')) {
+  wpilibRepositories.addAllReleaseRepositories(project)
+} else {
+  wpilibRepositories.addAllDevelopmentRepositories(project)
 }
 
 nativeUtils.addWpiNativeUtils()
 nativeUtils.withCrossRoboRIO()
-nativeUtils.withCrossLinuxArm32()
-nativeUtils.withCrossLinuxArm64()
+// nativeUtils.withCrossLinuxArm32()
+// nativeUtils.withCrossLinuxArm64()
 
 nativeUtils.crossCompilers.getByName(NativePlatforms.roborio).optional = false
-nativeUtils.crossCompilers.getByName(NativePlatforms.linuxarm32).optional = false
-nativeUtils.crossCompilers.getByName(NativePlatforms.linuxarm64).optional = false
+// nativeUtils.crossCompilers.getByName(NativePlatforms.linuxarm32).optional = false
+// nativeUtils.crossCompilers.getByName(NativePlatforms.linuxarm64).optional = false
+
+nativeUtils {
+    wpi {
+        configureDependencies {
+            wpiVersion = "2024.+"
+            opencvYear = "frc2024"
+            googleTestYear = "frc2024"
+            niLibVersion = "2024.2.1"
+            opencvVersion = "4.8.0-2"
+            googleTestVersion = "1.14.0-1"
+        }
+    }
+}
 
 model {
     components {
@@ -47,6 +67,7 @@ model {
                     exportedHeaders {
                         srcDirs 'src/main/native/include'
                     }
+                    lib library: 'driver_shared'
                 }
             }
         }
@@ -64,6 +85,7 @@ model {
             }
             binaries.all {
                 lib library: 'TestLib', linkage: 'shared'
+                lib library: 'wpilib_executable_shared'
             }
         }
     }

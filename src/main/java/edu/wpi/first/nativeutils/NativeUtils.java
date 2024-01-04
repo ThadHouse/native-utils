@@ -8,6 +8,7 @@ import org.gradle.internal.os.OperatingSystem;
 import edu.wpi.first.deployutils.DeployUtils;
 import edu.wpi.first.nativeutils.exports.ExportsConfigPlugin;
 import edu.wpi.first.nativeutils.exports.PrivateExportsConfigRules;
+import edu.wpi.first.nativeutils.model.PrebuiltLibraryRules;
 import edu.wpi.first.nativeutils.pdb.PdbPlugin;
 import edu.wpi.first.nativeutils.platforms.PlatformRules;
 import edu.wpi.first.toolchain.ToolchainExtension;
@@ -44,5 +45,7 @@ public class NativeUtils implements Plugin<Project> {
     }
 
     project.getPluginManager().apply(GradleVsCode.class);
+
+    project.getPluginManager().apply(PrebuiltLibraryRules.class);
   }
 }

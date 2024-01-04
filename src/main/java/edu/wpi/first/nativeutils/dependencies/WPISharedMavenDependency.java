@@ -25,7 +25,7 @@ public abstract class WPISharedMavenDependency extends WPIMavenDependency {
     }
 
     @Override
-    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType, Optional<FastDownloadDependencySet> loaderDependencySet) {
+    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType) {
         Optional<ResolvedNativeDependency> resolvedDep = tryFromCache(platform, buildType);
         if (resolvedDep.isPresent()) {
             return resolvedDep;
@@ -39,8 +39,8 @@ public abstract class WPISharedMavenDependency extends WPIMavenDependency {
 
         String buildTypeName = buildType.getName();
 
-        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS, loaderDependencySet);
-        FileCollection sources = getArtifactRoots(getSourceClassifier().getOrElse(null), ArtifactType.SOURCES, loaderDependencySet);
+        FileCollection headers = getArtifactRoots(getHeaderClassifier().getOrElse(null), ArtifactType.HEADERS);
+        FileCollection sources = getArtifactRoots(getSourceClassifier().getOrElse(null), ArtifactType.SOURCES);
 
         List<String> sharedExcludes = SHARED_EXCLUDES;
         Set<String> extraExcludes = getExtraSharedExcludes().get();
@@ -49,13 +49,13 @@ public abstract class WPISharedMavenDependency extends WPIMavenDependency {
             sharedExcludes.addAll(extraExcludes);
         }
 
-        FileCollection linkFiles = getArtifactFiles(platformName, buildTypeName, SHARED_MATCHERS, sharedExcludes, ArtifactType.LINK, loaderDependencySet);
+        FileCollection linkFiles = getArtifactFiles(platformName, buildTypeName, SHARED_MATCHERS, sharedExcludes, ArtifactType.LINK);
 
         FileCollection runtimeFiles;
         if (getSkipAtRuntime().getOrElse(false)) {
             runtimeFiles = getProject().files();
         } else {
-            runtimeFiles = getArtifactFiles(platformName, buildTypeName, RUNTIME_MATCHERS, RUNTIME_EXCLUDES, ArtifactType.RUNTIME, loaderDependencySet);
+            runtimeFiles = getArtifactFiles(platformName, buildTypeName, RUNTIME_MATCHERS, RUNTIME_EXCLUDES, ArtifactType.RUNTIME);
         }
 
         resolvedDep = Optional.of(new ResolvedNativeDependency(headers, sources, linkFiles, runtimeFiles));

@@ -37,7 +37,7 @@ public abstract class CombinedIgnoreMissingPlatformNativeDependency implements N
     }
 
     @Override
-    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType, Optional<FastDownloadDependencySet> loaderDependencySet) {
+    public Optional<ResolvedNativeDependency> resolveNativeDependency(NativePlatform platform, BuildType buildType) {
         Map<String, List<String>> dependencies = getDependencies().get();
 
         ProjectLayout projectLayout = getProjectLayout();
@@ -53,7 +53,7 @@ public abstract class CombinedIgnoreMissingPlatformNativeDependency implements N
         }
 
         for (String dep : depsForPlatform) {
-            ResolvedNativeDependency resolved = dependencyCollection.getByName(dep).resolveNativeDependency(platform, buildType, loaderDependencySet).get();
+            ResolvedNativeDependency resolved = dependencyCollection.getByName(dep).resolveNativeDependency(platform, buildType).get();
             includeRoots = includeRoots.plus(resolved.getIncludeRoots());
             sourceRoots = sourceRoots.plus(resolved.getSourceRoots());
             linkFiles = linkFiles.plus(resolved.getLinkFiles());
