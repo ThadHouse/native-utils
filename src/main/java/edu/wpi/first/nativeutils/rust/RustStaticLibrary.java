@@ -17,6 +17,7 @@ import org.gradle.nativeplatform.platform.NativePlatform;
 import org.gradle.platform.base.Platform;
 import org.gradle.platform.base.PlatformContainer;
 
+import edu.wpi.first.nativeutils.NativeUtilsExtension;
 import edu.wpi.first.nativeutils.rust.model.RustPrebuiltStaticLibraryBinary;
 
 public abstract class RustStaticLibrary extends RustLibrary {
@@ -24,8 +25,8 @@ public abstract class RustStaticLibrary extends RustLibrary {
     private final ObjectFactory objects;
 
     @Inject
-    public RustStaticLibrary(String name, RustProject rustProject, ObjectFactory objects) {
-        super(name, rustProject);
+    public RustStaticLibrary(String name, RustProject rustProject, ObjectFactory objects, NativeUtilsExtension nue) {
+        super(name, rustProject, objects, nue);
         this.objects = objects;
     }
 
@@ -41,7 +42,6 @@ public abstract class RustStaticLibrary extends RustLibrary {
 
     @Override
     public void createPrebuiltBinaries(DomainObjectSet<NativeLibraryBinary> binaries, PlatformContainer platforms, BuildTypeContainer buildTypes, FlavorContainer flavors) {
-        System.out.println("Creating prebuilts");
         for (RustVariantConfiguration variant : variants) {
             Platform platform = platforms.findByName(variant.getTargetPlatform());
             if (platform == null || !(platform instanceof NativePlatform)) {

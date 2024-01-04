@@ -68,4 +68,8 @@ public class RustExtension {
     public CargoLocator getCargoLocator() {
         return cargoLocator;
     }
+
+    public RustProject getRustProject() {
+        return rustProject;
+    }
 }

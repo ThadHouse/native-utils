@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.Named;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.nativeplatform.BuildType;
 import org.gradle.nativeplatform.BuildTypeContainer;
 import org.gradle.nativeplatform.FlavorContainer;
@@ -11,16 +12,22 @@ import org.gradle.nativeplatform.NativeLibraryBinary;
 import org.gradle.nativeplatform.platform.NativePlatform;
 import org.gradle.platform.base.PlatformContainer;
 
+import edu.wpi.first.nativeutils.NativeUtilsExtension;
 import edu.wpi.first.nativeutils.WPINativeUtilsExtension.Platforms;
+import edu.wpi.first.nativeutils.dependencies.ExtractDelegatedDependencySet;
 
 public abstract class RustLibrary implements Named {
     private final String name;
     private final RustProject rustProject;
+    private final ObjectFactory objects;
+    private final NativeUtilsExtension nue;
 
     @Inject
-    public RustLibrary(String name, RustProject rustProject) {
+    public RustLibrary(String name, RustProject rustProject, ObjectFactory objects, NativeUtilsExtension nue) {
         this.name = name;
         this.rustProject = rustProject;
+        this.objects = objects;
+        this.nue = nue;
     }
 
     public String getName() {
@@ -32,6 +39,12 @@ public abstract class RustLibrary implements Named {
     }
 
     public abstract void addVariant(String platform, String buildType);
+
+    public void addRequiredNativeDependency(String... libraries) {
+        for (String library : libraries) {
+            ExtractDelegatedDependencySet dds = objects.newInstance(ExtractDelegatedDependencySet.class, library, nue.getNativeDependencyContainer(), true);
+        }
+    }
 
     public void addVariant(NativePlatform platform, BuildType buildType) {
         addVariant(platform.getName(), buildType.getName());

@@ -44,6 +44,10 @@ public class RustProject {
         this.layout = layout;
     }
 
+    public Map<String, Map<String, TaskProvider<CargoBuild>>> getBuildTasks() {
+        return buildTasks;
+    }
+
     private final Map<String, String> tripleMap = new HashMap<>(Map.of("linuxathena", "armv7-unknown-linux-gnueabi", "windowsx86-64", "x86_64-pc-windows-msvc", "windowsarm64", "aarch64-pc-windows-msvc"));
 
     public TaskProvider<CargoBuild> getTaskForVariant(String platform, String buildType) {
