@@ -447,7 +447,7 @@ public class WPINativeUtilsExtension {
                 "googletest-cpp",
                 wpiVersion);
 
-        configs.register("mrclib", WPISharedMavenDependency.class, c -> {
+        configs.register("mrclib_shared", WPISharedMavenDependency.class, c -> {
             c.getGroupId().set("org.wpilib.mrclib");
             c.getArtifactId().set("mrclib-cpp");
             c.getHeaderClassifier().set("headers");
