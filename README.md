@@ -69,6 +69,16 @@ nativeUtils {
       staticPlatforms << ""
     }
   }
+  // Add a dependency using files that are already on disk. The map keys are
+  // native platform names, and the values are paths to link/runtime files.
+  // Platforms omitted from either map use this dependency as header-only.
+  nativeDependencyContainer {
+    create("localLibrary", org.wpilib.nativeutils.dependencies.WPIOnDiskDependency) {
+      headers = project.layout.projectDirectory.dir("path/to/include")
+      buildDependencies.put("linuxx64", ["path/to/liblocal.a"])
+      runtimeDependencies.put("linuxx64", ["path/to/liblocal.so"])
+    }
+  }
   // Add
   combinedDependencyConfigs {
     combinedName {
