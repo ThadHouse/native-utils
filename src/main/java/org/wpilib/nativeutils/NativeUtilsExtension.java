@@ -33,6 +33,7 @@ import org.wpilib.nativeutils.dependencies.DelegatedDependencySet;
 import org.wpilib.nativeutils.dependencies.FastDownloadDependencySet;
 import org.wpilib.nativeutils.dependencies.NativeDependency;
 import org.wpilib.nativeutils.dependencies.WPIHeaderOnlyMavenDependency;
+import org.wpilib.nativeutils.dependencies.WPIOnDiskDependency;
 import org.wpilib.nativeutils.dependencies.WPISharedMavenDependency;
 import org.wpilib.nativeutils.dependencies.WPIStaticMavenDependency;
 import org.wpilib.nativeutils.exports.DefaultExportsConfig;
@@ -107,6 +108,7 @@ public class NativeUtilsExtension {
     addNativeDependencyType(WPIStaticMavenDependency.class, project);
     addNativeDependencyType(WPISharedMavenDependency.class, project);
     addNativeDependencyType(WPIHeaderOnlyMavenDependency.class, project);
+    addNativeDependencyType(WPIOnDiskDependency.class, project);
 
     addNativeDependencyType(CombinedIgnoreMissingPlatformNativeDependency.class, dependencyContainer);
     addNativeDependencyType(AllPlatformsCombinedNativeDependency.class, dependencyContainer);
