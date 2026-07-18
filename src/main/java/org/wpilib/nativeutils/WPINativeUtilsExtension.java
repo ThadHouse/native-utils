@@ -34,7 +34,8 @@ public class WPINativeUtilsExtension {
     public static class DefaultArguments {
 
         public final List<String> windowsCompilerArgs = List.of("/EHsc", "/FS", "/Zc:inline", "/wd4244", "/wd4267",
-                "/wd4146", "/wd4996", "/Zc:throwingNew", "/D_CRT_SECURE_NO_WARNINGS", "/std:c++23preview", "/permissive-",
+                "/wd4146", "/wd4996", "/Zc:throwingNew", "/D_CRT_SECURE_NO_WARNINGS", "/std:c++23preview",
+                "/permissive-",
                 "/utf-8", "/bigobj", "/Zc:__cplusplus", "/Zc:preprocessor", "/wd5105", "/wd4324"); // 5105 is thrown by
                                                                                                    // windows sdk
                                                                                                    // headers
@@ -66,9 +67,10 @@ public class WPINativeUtilsExtension {
         public final List<String> linuxCrossDebugCompilerArgs = List.of("-Og");
 
         public final List<String> linuxCompilerArgs = List.of("-std=c++23", "-Wformat=2", "-pedantic", "-Wno-psabi",
-                "-Wno-unused-parameter", "-Wno-error=deprecated-enum-enum-conversion", "-fPIC", "-pthread");
+                "-Wno-unused-parameter", "-Wno-error=deprecated-enum-enum-conversion", "-fPIC", "-pthread",
+                "-Wno-array-bounds");
         public final List<String> linuxCCompilerArgs = List.of("-Wformat=2", "-pedantic", "-Wno-psabi",
-                "-Wno-unused-parameter", "-fPIC", "-pthread");
+                "-Wno-unused-parameter", "-fPIC", "-pthread", "-Wno-array-bounds");
         public final List<String> linuxLinkerArgs = List.of("-rdynamic", "-pthread", "-ldl", "-latomic",
                 "-Wl,-rpath,'$ORIGIN'");
         public final List<String> linuxReleaseCompilerArgs = List.of("-O2");
@@ -81,7 +83,8 @@ public class WPINativeUtilsExtension {
                 "-Wno-unused-private-field", "-Wno-unused-const-variable", "-Wno-error=c11-extensions", "-pthread",
                 "-Wno-deprecated-anon-enum-enum-conversion");
         public final List<String> macCCompilerArgs = List.of("-pedantic", "-fPIC", "-Wno-unused-parameter",
-                "-Wno-missing-field-initializers", "-Wno-unused-private-field", "-Wno-fixed-enum-extension", "-Wno-c23-extensions", "-Wno-unknown-warning-option");
+                "-Wno-missing-field-initializers", "-Wno-unused-private-field", "-Wno-fixed-enum-extension",
+                "-Wno-c23-extensions", "-Wno-unknown-warning-option");
         public final List<String> macObjcppCompilerArgs = List.of("-std=c++23", "-stdlib=libc++", "-fobjc-weak",
                 "-fobjc-arc", "-fPIC");
         public final List<String> macObjcCompilerArgs = List.of("-fobjc-weak", "-fobjc-arc", "-fPIC");
@@ -479,12 +482,14 @@ public class WPINativeUtilsExtension {
 
         configs.register("driver_static", AllPlatformsCombinedNativeDependency.class, c -> {
             ListProperty<String> d = c.getDependencies();
-            d.set(List.of("hal_static", "datalog_static", "wpimath_static", "wpinet_static", "wpiutil_static", "mrclib_shared"));
+            d.set(List.of("hal_static", "datalog_static", "wpimath_static", "wpinet_static", "wpiutil_static",
+                    "mrclib_shared"));
         });
 
         configs.register("driver_shared", AllPlatformsCombinedNativeDependency.class, c -> {
             ListProperty<String> d = c.getDependencies();
-            d.set(List.of("hal_shared", "datalog_shared", "wpimath_shared", "wpinet_shared", "wpiutil_shared", "mrclib_shared"));
+            d.set(List.of("hal_shared", "datalog_shared", "wpimath_shared", "wpinet_shared", "wpiutil_shared",
+                    "mrclib_shared"));
         });
 
         configs.register("vision_jni_shared", AllPlatformsCombinedNativeDependency.class, c -> {
